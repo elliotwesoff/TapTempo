@@ -10,36 +10,31 @@ import Cocoa
 import Foundation
 
 class TapTempo: NSObject {
-    var times: [Date]
+    var lastTap: Date!
     var previousBpms: [Int]
     var firstTap: Bool
     
     override init() {
-        self.times = []
         self.previousBpms = []
         self.firstTap = true
     }
     
     func tap() -> Int {
-        self.times.append(Date())
-        if self.times.count > 2 {
-            self.times.remove(at: 0)
-            return self.calculateBPM()
-        } else {
+        if self.firstTap == true {
+            self.firstTap = false
+            self.lastTap = Date()
             return 0
+        } else {
+            let bpm = self.calculateBPM()
+            self.lastTap = Date()
+            return bpm
         }
     }
     
     func calculateBPM() -> Int {
-        let t1 = self.times[0]
-        let t2 = self.times[self.times.count - 1]
-        let interval = t2.timeIntervalSince(t1)
+        let now = Date()
+        let interval = now.timeIntervalSince(self.lastTap)
         let bpm = Int(60 / interval)
-        
-        if self.firstTap == true {
-            self.firstTap = false
-            self.previousBpms = [bpm, bpm, bpm, bpm]
-        }
         
         // stabilize because we're human.
         if self.previousBpms.count > 5 {
