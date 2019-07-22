@@ -13,6 +13,7 @@ class TapTempo: NSObject {
     var lastTap: Date!
     var previousBpms: [Int]
     var firstTap: Bool
+    let stabilizer = 3
     
     override init() {
         self.previousBpms = []
@@ -37,7 +38,7 @@ class TapTempo: NSObject {
         let bpm = Int(60 / interval)
         
         // stabilize because we're human.
-        if self.previousBpms.count > 5 {
+        if self.previousBpms.count > self.stabilizer {
             self.previousBpms.remove(at: 0)
         }
         
